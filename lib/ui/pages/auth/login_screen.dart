@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> iniciarSesion() async {
     setState(() => _isLoading = true);
-    final url = Uri.parse('http://10.0.2.2:3000/login');
+    final url = Uri.parse('https://hemihydrated-gemma-catchingly.ngrok-free.dev/login');
     try {
       final response = await http.post(
         url,

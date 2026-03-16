@@ -3,19 +3,25 @@ import 'package:flutter/material.dart';
 class PanelInicioRuta extends StatelessWidget {
   final String? nombreViaje;
   final int paxActual;
+  final List<String> nombresAmigos;
   final String tiempoEstimado;
   final String distancia;
   final VoidCallback onAddFriend;
   final VoidCallback onAction;
+  final Function(int index) onRemoveFriend; // Nueva: para quitar amigos
+  final Function(int index) onUserTap;      // Nueva: para ir a su ubicación
 
   const PanelInicioRuta({
     super.key,
     this.nombreViaje,
     required this.paxActual,
+    required this.nombresAmigos,
     required this.tiempoEstimado,
     required this.distancia,
     required this.onAddFriend,
     required this.onAction,
+    required this.onRemoveFriend,
+    required this.onUserTap,
   });
 
   @override
@@ -41,7 +47,6 @@ class PanelInicioRuta extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // INDICADOR SUPERIOR
           Container(
             width: 50,
             height: 5,
@@ -52,7 +57,6 @@ class PanelInicioRuta extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           
-          // FILA DE DESTINO Y PAX
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -86,9 +90,56 @@ class PanelInicioRuta extends StatelessWidget {
               ),
             ],
           ),
+
+          // LISTA DE AMIGOS CON ACCIONES
+          if (nombresAmigos.isNotEmpty) ...[
+            const SizedBox(height: 15),
+            SizedBox(
+              height: 35,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: nombresAmigos.length,
+                itemBuilder: (context, index) => Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    border: Border.all(color: Colors.black, width: 1.5),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // BOTÓN NOMBRE (IR A UBICACIÓN)
+                      GestureDetector(
+                        onTap: () => onUserTap(index),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Text(
+                            nombresAmigos[index].toUpperCase(),
+                            style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                      ),
+                      // BOTÓN X (ECHAR)
+                      GestureDetector(
+                        onTap: () => onRemoveFriend(index),
+                        child: Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: const BoxDecoration(
+                            border: Border(left: BorderSide(color: Colors.black, width: 1.5)),
+                            color: Colors.white,
+                          ),
+                          child: const Icon(Icons.close, size: 14, color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+
           const SizedBox(height: 25),
           
-          // FILA DE ESTADÍSTICAS (TIEMPO Y DISTANCIA)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -99,10 +150,8 @@ class PanelInicioRuta extends StatelessWidget {
           ),
           const SizedBox(height: 30),
           
-          // BOTONES DE ACCIÓN
           Row(
             children: [
-              // BOTÓN INVITAR
               GestureDetector(
                 onTap: onAddFriend,
                 child: Container(
@@ -117,7 +166,6 @@ class PanelInicioRuta extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 15),
-              // BOTÓN INICIAR RUTA
               Expanded(
                 child: GestureDetector(
                   onTap: onAction,

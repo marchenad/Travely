@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import '../../../core/config.dart'; // Importamos la configuración
 import 'package:travely/ui/pages/auth/login_screen.dart';
 import 'package:travely/ui/widgets/common/estilos.dart';
 
@@ -39,7 +40,8 @@ class _PerfilPageState extends State<PerfilPage> {
       final imageBytes = await file.readAsBytes();
       final base64String = base64Encode(imageBytes);
 
-      final url = Uri.parse('http://10.0.2.2:3000/update-foto');
+      // USAMOS AppConfig.baseUrl
+      final url = Uri.parse('${AppConfig.baseUrl}/update-foto');
       try {
         final response = await http.post(
           url,
@@ -253,4 +255,3 @@ class _PerfilPageState extends State<PerfilPage> {
     );
   }
 }
-

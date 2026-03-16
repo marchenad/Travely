@@ -5,6 +5,7 @@ class BarraNavegacion extends StatelessWidget {
   final String tiempoRestante;
   final String distanciaRestante;
   final VoidCallback onDetener;
+  final VoidCallback? onShowFriends; // Nuevo callback para mostrar amigos
 
   const BarraNavegacion({
     super.key,
@@ -12,6 +13,7 @@ class BarraNavegacion extends StatelessWidget {
     required this.tiempoRestante,
     required this.distanciaRestante,
     required this.onDetener,
+    this.onShowFriends,
   });
 
   @override
@@ -64,19 +66,40 @@ class BarraNavegacion extends StatelessWidget {
               ],
             ),
 
-            // BOTÓN DETENER (X ROJA)
-            GestureDetector(
-              onTap: onDetener,
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF5252),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.black, width: 2.5),
-                  boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
+            // BOTONES DE ACCIÓN (GRUPO Y CERRAR)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (onShowFriends != null) ...[
+                  GestureDetector(
+                    onTap: onShowFriends,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE1FF00),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.black, width: 2.5),
+                        boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
+                      ),
+                      child: const Icon(Icons.group, color: Colors.black, size: 24),
+                    ),
+                  ),
+                  const SizedBox(width: 15),
+                ],
+                GestureDetector(
+                  onTap: onDetener,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF5252),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 2.5),
+                      boxShadow: const [BoxShadow(color: Colors.black, offset: Offset(3, 3))],
+                    ),
+                    child: const Icon(Icons.close, color: Colors.white, size: 28),
+                  ),
                 ),
-                child: const Icon(Icons.close, color: Colors.white, size: 28),
-              ),
+              ],
             ),
           ],
         ),

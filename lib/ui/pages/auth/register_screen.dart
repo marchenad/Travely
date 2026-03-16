@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:travely/ui/widgets/common/estilos.dart';
+import '../../../core/config.dart'; // Importamos la configuración
+import '../../widgets/common/estilos.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,7 +21,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> registrarUsuario() async {
     setState(() => _isLoading = true);
-    final url = Uri.parse('http://10.0.2.2:3000/register');
+    
+    // USAMOS AppConfig.baseUrl para que funcione en el APK
+    final url = Uri.parse('${AppConfig.baseUrl}/registrar');
+    
     try {
       final response = await http.post(
         url,
@@ -40,13 +44,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         );
         Navigator.pop(context);
       } else {
+        final errorData = json.decode(response.body);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al registrar')),
+          SnackBar(content: Text('Error: ${errorData['error'] ?? 'No se pudo registrar'}')),
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error de conexión')),
+        const SnackBar(content: Text('Error de conexión con el servidor')),
       );
     } finally {
       if (mounted) {
@@ -137,4 +144,3 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-
