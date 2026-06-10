@@ -1,0 +1,14 @@
+lib/
+├── data/
+│   ├── models/          # Define cómo es un "Usuario" en Dart
+│   │   └── user_model.dart
+│   ├── providers/       # La conexión real (PostgreSQL o API)
+│   │   └── database_helper.dart
+│   └── repositories/    # Intermediario entre la base de datos y la UI
+│       └── user_repository.dart
+├── ui/
+│   ├── pages/           # Tus archivos actuales
+│   │   ├── map_page.dart
+│   │   └── perfil.dart
+│   └── widgets/         # Componentes reutilizables (botones, inputs)
+└── main.dart
