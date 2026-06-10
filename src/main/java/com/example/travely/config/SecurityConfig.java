@@ -27,32 +27,60 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource)
-            throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           CorsConfigurationSource corsConfigurationSource) throws Exception {
+
         return http
+                // 🔒 CSRF desactivado (JWT stateless)
                 .csrf(AbstractHttpConfigurer::disable)
+
+                // 🌐 CORS correcto (CRÍTICO para Angular)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                // 🧠 Stateless session (JWT)
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+
+                // 🔐 Authorization rules
                 .authorizeHttpRequests(auth -> auth
+
+                        // 🔥 IMPORTANTE: preflight CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // 🔓 Auth público
                         .requestMatchers("/api/v1/auth/**").permitAll()
+
+                        // 🔓 Websockets si usas chat
                         .requestMatchers("/ws/**").permitAll()
+
+                        // 🔒 todo lo demás protegido
                         .anyRequest().authenticated()
                 )
+
+                // 🚨 Manejo de errores auth
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) ->
-                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
+                                res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+                        )
                 )
+
+                // 👤 UserDetailsService
                 .userDetailsService(userDetailsService)
+
+                // 🔑 JWT filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .build();
     }
 
+    // 🔐 Password encoder
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // 🔧 Authentication manager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
